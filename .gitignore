@@ -11,5 +11,5 @@ yarn-error.log*
 .vscode
 *.suo
 *.ntvs*
-*.njsproj
 *.sln
+*.njsproj
