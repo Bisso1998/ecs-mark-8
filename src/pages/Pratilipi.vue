@@ -115,6 +115,23 @@
                             </div>
 
                             <AboutAuthor :authorId="getPratilipiData.author.authorId" :pratilipiData="getPratilipiData"></AboutAuthor>
+
+                        </div>
+                        <div class="card webpush-strip-container" v-if="isWebPushStripEnabled">
+                            <div class="head-title">
+                                __("web_push_section_title")
+                                <button class="close" @click="closeWebPushStrip()">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </div>
+                            <WebPushStrip
+                                screenName="PRATILIPI"
+                                message="__('web_push_message_3')"
+                                :includeIcon=true
+                                :includeDisableButton=false
+                                :includeCloseButton=false
+                                v-on:WebPushEnabled="isWebPushStripEnabled=false">
+                            </WebPushStrip>
                         </div>
                         <div class="card">
                             <div class="head-title">__("review_heading")</div>
@@ -159,6 +176,12 @@
                 </div>
                 <Spinner v-if="getPratilipiLoadingState === 'LOADING'"></Spinner>
                 <ServerError :action="'pratilipipage/fetchPratilipiDetailsAndUserPratilipiData'" :data="$route.params.slug_id" v-if="getPratilipiLoadingState === 'LOADING_ERROR'"></ServerError>
+                <WebPushModal
+                    screenName="PRATILIPI"
+                    title="__('web_push_title')"
+                    message="__('web_push_message_2')"
+                    :includeDisableButton=true
+                    v-if="isWebPushModalEnabled"></WebPushModal>
             </div>
         </div>
     </MainLayout>
@@ -171,9 +194,12 @@ import AboutAuthor from '@/components/AboutAuthor.vue';
 import Spinner from '@/components/Spinner.vue';
 import Reviews from '@/components/Reviews.vue';
 import ServerError from '@/components/ServerError.vue';
+import WebPushStrip from '@/components/WebPushStrip.vue';
+import WebPushModal from '@/components/WebPushModal.vue';
 // import BookTags from '@/components/BookTags.vue';
 import mixins from '@/mixins';
 import constants from '@/constants'
+import WebPushUtil from '@/utils/WebPushUtil'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -190,6 +216,11 @@ export default {
             showShowMoreOfSummary: false,
             hasLandedBeenTriggered: false,
             isCreated: null,
+            isWebPushStripEnabled: false,
+            isWebPushModalEnabled: false,
+            webPushModalTriggered: false,
+            scrollPosition: null,
+            percentScrolled: null
         }
     },
     mixins: [
@@ -492,10 +523,19 @@ export default {
                 // your element doesn't have overflow
                 this.showShowMoreOfSummary = false;
             }
+        },
+        closeWebPushStrip() {
+            this.isWebPushStripEnabled = false
+            this.triggerAnanlyticsEvent(`CLOSED_WEBPUSHSTRIP_PRATILIPI`, 'CONTROL', {'USER_ID': this.getUserDetails.userId, 'ACTION_COUNT': WebPushUtil.getNthActionCount()})
+            WebPushUtil.disabledOnCustomPrompt(this.$route.meta.store)
+        },
+        updateScroll() {
+            this.scrollPosition = window.scrollY
+            this.percentScrolled = ($(window).scrollTop()/($(document).height()-$(window).height()))*100
         }
     },
     created() {
-         this.isCreated = true;
+        this.isCreated = true;
         const slug_id = this.$route.params.slug_id;
         const pratilipiData = this.$route.params.pratilipiData;
         this.selectedPratilipiType = this.getPratilipiData.type;
@@ -511,7 +551,12 @@ export default {
         Spinner,
         // BookTags,
         Reviews,
-        ServerError
+        ServerError,
+        WebPushStrip,
+        WebPushModal
+    },
+    mounted() {
+        window.addEventListener('scroll', this.updateScroll);
     },
     watch: {
         '$route.params.slug_id' (slug_id) {
@@ -527,6 +572,15 @@ export default {
             this.selectedTags = this.getPratilipiData.tags ? [ ...this.getPratilipiData.tags ] : [];
             this.suggestedTags = this.getPratilipiData.suggestedTags;
             document.title = this.getPratilipiData.title;
+
+            // default value for webPushModalTriggered is false
+            this.webPushModalTriggered = false;
+
+            // setting isWebPushStripEnabled
+            this.isWebPushStripEnabled = this.getPratilipiData.state === "PUBLISHED" && WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 50 && (parseInt(this.getCookie('bucketId')) || 0) < 60;
+
+            // setting isWebPushModalEnabled
+            this.isWebPushModalEnabled = this.getPratilipiData.state === "PUBLISHED" && WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 60 && (parseInt(this.getCookie('bucketId')) || 0) < 70;
         },
         'getPratilipiLoadingState'(status) {
             if (status === 'LOADING_SUCCESS' && !this.hasLandedBeenTriggered) {
@@ -551,6 +605,12 @@ export default {
             this.isCreated=false;                
             }
         },
+        'percentScrolled'(newPercentScrolled, prevPercentScrolled) {
+            if (newPercentScrolled > 90 && !this.webPushModalTriggered) {
+                this.webPushModalTriggered = true
+                this.openWebPushModal()
+            }
+        },
         selectedPratilipiType(newType) {
             if (newType === this.getPratilipiData.type) {
                 this.selectedTags = this.getPratilipiData.tags ? [ ...this.getPratilipiData.tags ] : [];
@@ -558,6 +618,9 @@ export default {
                 this.selectedTags = [];
             }
         }
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.updateScroll);
     }
 }
 </script>
@@ -835,6 +898,26 @@ export default {
             }
             &.show {
                 bottom: 0;
+            }
+        }
+        .webpush-strip-container {
+            button.close {
+                position: absolute;
+                right: 8px;
+                i {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+</style>
+<style lang="scss">
+    .pratilipi-page {
+        .webpush-strip-container {
+            .webpush-strip {
+                .inner-container {
+                    padding: 8px !important;
+                }
             }
         }
     }

@@ -627,6 +627,46 @@ export default {
         "LOCATION": "HOMEM",
         "ACTION": "LANDED"
     },
+    "VIEWED_WEBPUSHSTRIP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "VIEWED"
+    },
+    "ENABLED_WEBPUSHSTRIP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "ENABLED"
+    },
+    "DISABLED_WEBPUSHSTRIP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "DISABLED"
+    },
+    "CLOSED_WEBPUSHSTRIP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "CLOSED"
+    },
+    "VIEWED_WEBPUSHPOPUP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "VIEWED"
+    },
+    "ENABLED_WEBPUSHPOPUP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "ENABLED"
+    },
+    "DISABLED_WEBPUSHPOPUP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "DISABLED"
+    },
+    "CLOSED_WEBPUSHPOPUP_HOME": {
+        "SCREEN_NAME": "HOME",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "CLOSED"
+    },
     "CLICKSHRBOOK_LIBRARYM_LIBRARY": {
         "SCREEN_NAME": "LIBRARY",
         "LOCATION": "LIBRARYM",
@@ -1150,15 +1190,35 @@ export default {
         "LOCATION": "WEBPUSHSTRIP",
         "ACTION": "DISABLED"
     },
+    "CLOSED_WEBPUSHSTRIP_READER": {
+        "SCREEN_NAME": "READER",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "CLOSED"
+    },
+    "VIEWED_WEBPUSHSTRIP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "VIEWED"
+    },
+    "ENABLED_WEBPUSHSTRIP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "ENABLED"
+    },
+    "CLOSED_WEBPUSHSTRIP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHSTRIP",
+        "ACTION": "CLOSED"
+    },
     "VIEWED_WEBPUSHPOPUP_READER": {
         "SCREEN_NAME": "READER",
         "LOCATION": "WEBPUSHPOPUP",
-        "ACTION": "DISABLED"
+        "ACTION": "VIEWED"
     },
     "ENABLED_WEBPUSHPOPUP_READER": {
         "SCREEN_NAME": "READER",
         "LOCATION": "WEBPUSHPOPUP",
-        "ACTION": "DISABLED"
+        "ACTION": "ENABLED"
     },
     "DISABLED_WEBPUSHPOPUP_READER": {
         "SCREEN_NAME": "READER",
@@ -1167,6 +1227,26 @@ export default {
     },
     "CLOSED_WEBPUSHPOPUP_READER": {
         "SCREEN_NAME": "READER",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "CLOSED"
+    },
+    "VIEWED_WEBPUSHPOPUP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "VIEWED"
+    },
+    "ENABLED_WEBPUSHPOPUP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "ENABLED"
+    },
+    "DISABLED_WEBPUSHPOPUP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
+        "LOCATION": "WEBPUSHPOPUP",
+        "ACTION": "DISABLED"
+    },
+    "CLOSED_WEBPUSHPOPUP_PRATILIPI": {
+        "SCREEN_NAME": "PRATILIPI",
         "LOCATION": "WEBPUSHPOPUP",
         "ACTION": "CLOSED"
     },
