@@ -12,3 +12,4 @@ yarn-error.log*
 *.suo
 *.ntvs*
 *.sln
+package-lock.json
