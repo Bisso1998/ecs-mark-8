@@ -136,12 +136,16 @@
                             </div>
 
                             <div class="book-bottom-webpush-subscribe">
-                                <WebPushStrip
-                                    :title="getWebPushStripTitle()"
-                                    :message="getWebPushStripMessage()"
-                                    screenName="READER"
-                                    v-if="selectedChapter == getIndexData.length && isWebPushStripEnabled">
-                                </WebPushStrip>
+                                <div class="webpush-container">
+                                    <div class="webpush-inner-container">
+                                        <WebPushStrip
+                                            screenName="READER"
+                                            title="__('web_push_title')"
+                                            message="__('web_push_message_3')"
+                                            v-if="selectedChapter == getIndexData.length && isWebPushStripEnabled">
+                                        </WebPushStrip>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="book-recomendations p-r-10" v-if="selectedChapter == getIndexData.length">
@@ -155,9 +159,9 @@
                             </div>
 
                             <WebPushModal
-                                :title="getWebPushModalTitle()"
-                                :message="getWebPushModalMessage()"
                                 screenName="READER"
+                                title="__('web_push_title')"
+                                message="__('web_push_message_2')"
                                 :includeDisableButton=true
                                 v-if="selectedChapter == getIndexData.length && isWebPushModalEnabled"></WebPushModal>
 
@@ -339,14 +343,9 @@ export default {
             'setShareDetails',
             'setAfterLoginAction'
         ]),
-        recordMaxRead(maxRead) {
-            if (this.$route.query.chapterNo) {
-                this.chapterCount = Number(this.$route.query.chapterNo);
-            }
-            else {
-                this.chapterCount = 1;
-            }
+        recordMaxRead() {
             let chapterCount = this.chapterCount;
+            let maxRead = this.maxRead;
             let indexData = this.getIndexData;
             let pratilipiId = this.getPratilipiData.pratilipiId;
             this.postReadingPercentage({pratilipiId, chapterCount, maxRead, indexData});
@@ -479,8 +478,8 @@ export default {
             $(".footer-section").addClass("theme-white");
             $(".container-fluid").css({"background-color": "white",});
             $(".comment-box").css({"background-color": "#f8f8f8",});
-            $(".webpush-strip").removeClass("bg-black");
-            $(".webpush-strip").addClass("bg-grey");
+            $(".book-bottom-webpush-subscribe").removeClass("bg-black");
+            $(".book-bottom-webpush-subscribe").addClass("bg-grey");
 
 
             const pratilipiAnalyticsData = this.getPratilipiAnalyticsData(this.getPratilipiData);
@@ -501,8 +500,8 @@ export default {
             $(".footer-section").addClass("theme-black");
             $(".container-fluid").css({"background-color": "black",});
             $(".comment-box").css({"background-color": "black",});
-            $(".webpush-strip").removeClass("bg-grey");
-            $(".webpush-strip").addClass("bg-black");
+            $(".book-bottom-webpush-subscribe").removeClass("bg-grey");
+            $(".book-bottom-webpush-subscribe").addClass("bg-black");
 
 
             const pratilipiAnalyticsData = this.getPratilipiAnalyticsData(this.getPratilipiData);
@@ -524,8 +523,8 @@ export default {
 
             $(".container-fluid").css({"background-color": "#F4ECD8",});
             $(".comment-box").css({"background-color": "#f8f8f8",});
-            $(".webpush-strip").removeClass("bg-black");
-            $(".webpush-strip").addClass("bg-grey");
+            $(".book-bottom-webpush-subscribe").removeClass("bg-black");
+            $(".book-bottom-webpush-subscribe").addClass("bg-grey");
 
 
 
@@ -598,19 +597,7 @@ export default {
         updateScroll() {
             this.scrollPosition = window.scrollY
             let wintop = $(window).scrollTop(), docheight = $('.book-content').height(), winheight = $(window).height()
-            this.percentScrolled = (wintop/(docheight-winheight))*100;
-        },
-        getWebPushStripTitle() {
-            return `__("web_push_title")`
-        },
-        getWebPushStripMessage() {
-            return `__("web_push_message_3")`
-        },
-        getWebPushModalTitle() {
-            return `__("web_push_title")`
-        },
-        getWebPushModalMessage() {
-            return `__("web_push_message_2")`
+            this.percentScrolled = (wintop/(docheight-winheight))*100
         }
     },
     computed: {
@@ -648,27 +635,10 @@ export default {
     mounted() {
         $('.read-page').bind("contextmenu",function(e){
             e.preventDefault();
-        });
+        }),
         window.addEventListener('scroll', this.updateScroll);
-        let that = this;
-        setTimeout(function(){
-            let docheight = $('.book-content').height();
-            let winheight = $(window).height();
-                that.maxRead = ((winheight/docheight)*100);
-                that.recordMaxRead(that.maxRead);
-        }, 1000);
     },
-
     watch: {
-        '$route' (newValue) {
-            let that = this;
-            setTimeout(function(){
-            let docheight = $('.book-content').height();
-            let winheight = $(window).height();
-            that.maxRead = ((winheight/docheight)*100);
-            that.recordMaxRead(that.maxRead);
-        }, 1000);
-    },
         '$route.query.id'(newValue) {
             this.fetchPratilipiDetails(newValue);
         },
@@ -703,8 +673,8 @@ export default {
             this.webPushModalTriggered = false;
 
             // setting up values for isWebPushStripEnabled and isWebPushModalEnabled
-            this.isWebPushStripEnabled = WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 20 && (parseInt(this.getCookie('bucketId')) || 0) < 40;
-            this.isWebPushModalEnabled =  WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 40 && (parseInt(this.getCookie('bucketId')) || 0) < 60;
+            this.isWebPushStripEnabled = this.getPratilipiData.state === "PUBLISHED" && WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 20 && (parseInt(this.getCookie('bucketId')) || 0) < 40;
+            this.isWebPushModalEnabled =  this.getPratilipiData.state === "PUBLISHED" && WebPushUtil.canShowCustomPrompt() && (parseInt(this.getCookie('bucketId')) || 0) >= 40 && (parseInt(this.getCookie('bucketId')) || 0) < 50;
         },
         'getUserDetails.userId'() {
             this.fetchPratilipiDetails(this.$route.query.id);
@@ -739,10 +709,16 @@ export default {
             }
         },
         'percentScrolled'(newPercentScrolled, prevPercentScrolled) {
+            if (this.$route.query.chapterNo) {
+                this.chapterCount = Number(this.$route.query.chapterNo);
+            }
+            else {
+                this.chapterCount = 1;
+            }
             if (this.maxRead < newPercentScrolled) {
                 this.maxRead = newPercentScrolled;
                 if (new Date() - this.recordTime > 1000) {
-                    this.recordMaxRead(this.maxRead);
+                    this.recordMaxRead();
                     this.recordTime = new Date();
                 }
             }
@@ -1355,6 +1331,24 @@ export default {
         position: relative;
         margin: 10px 0;
         padding: 0 15px;
+        .webpush-container {
+            max-width: 700px;
+            margin: auto;
+            .webpush-inner-container {
+                margin: 0 5px;
+                background: #f8f8f8;
+            }
+        }
+    }
+    .book-bottom-webpush-subscribe.bg-grey {
+        .webpush-container .webpush-inner-container {
+            background: #f8f8f8;
+        }
+    }
+    .book-bottom-webpush-subscribe.bg-black {
+        .webpush-container .webpush-inner-container {
+            background: black;
+        }
     }
 }
 </style>

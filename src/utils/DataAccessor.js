@@ -76,6 +76,12 @@ const INIT_OTHER_VIDEOS = "/init/v2.0/videos/other";
 
 const READ_PERCENTAGE_API = "/api/user_pratilipi/v2.0/user_pratilipis";
 
+const BLOGS_API = "/oasis/blogs/v1.0";
+const BLOGS_LIST_API = "/oasis/blogs/v1.0/list";
+const AUTHOR_INTERVIEWS_API = "/oasis/author-interviews/v1.0";
+const AUTHOR_INTERVIEWS_LIST_API = "/oasis/author-interviews/v1.0/list";
+
+
 const request = function(name, api, params) {
     return {
         "name": name,
@@ -345,64 +351,63 @@ export default {
              processGetResponse( response, status, aCallBack );
             } );
     },
-
-
-
-    getBlogPostByUri: (pageUri, aCallBack) => {
-        var requests = [];
-        requests.push(new request("req1", PAGE_API, { "uri": pageUri }));
-        requests.push(new request("req2", BLOG_POST_API, { "blogPostId": "$req1.primaryContentId" }));
-
-        httpUtil.get(API_PREFIX, null, { "requests": processRequests(requests) },
-            function(response, status) {
-                if (aCallBack != null) {
-                    var blogpost = response.req2.status == 200 ? response.req2.response : null;
-                    aCallBack(blogpost);
-                }
-            });
+  
+    getBlogPostByUri: (slug, aCallBack) => {
+	var params = {
+		"slug": slug
+	}
+	httpUtil.get(API_PREFIX + BLOGS_API,
+		null,
+		params,
+		function (response, status) {
+			var blogpost = status == 200 ? response : null;
+			aCallBack(blogpost);
+		});
     },
 
     getBlogPostListByUri: (language, state, cursor, resultCount, aCallBack) => {
-        var requests = [];
-        requests.push(new request("req1", PAGE_API, { "uri": '/blog' }));
-
         var params = {
-            "blogId": "$req1.primaryContentId",
             "language": language
         };
         params["state"] = state != null ? state : "PUBLISHED";
         if (cursor != null) params["cursor"] = cursor;
         if (resultCount != null) params["resultCount"] = resultCount;
+	httpUtil.get(API_PREFIX + BLOGS_LIST_API,
+            null,
+            params,
+            function(response, status) { 
+		var blogpost = status == 200 ? response : null;
+                aCallBack(blogpost);
+	    });
+    },
 
-        requests.push(new request("req2", BLOG_POST_LIST_API, params));
-        httpUtil.get(API_PREFIX, null, { "requests": processRequests(requests) },
-            function(response, status) {
-                if (aCallBack != null) {
-                    var blogpost = response.req2.status == 200 ? response.req2.response : null;
-                    aCallBack(blogpost);
-                }
-            });
+    getAuthorInterviewByUri: (slug, aCallBack) => {
+        var params = {
+                "slug": slug
+        }
+        httpUtil.get(API_PREFIX + AUTHOR_INTERVIEWS_API,
+                null,
+                params,
+                function (response, status) {
+                        var blogpost = status == 200 ? response : null;
+                        aCallBack(blogpost);
+                });
     },
 
     getAuthorInterviewListByUri: (language, state, cursor, resultCount, aCallBack) => {
-        var requests = [];
-        requests.push(new request("req1", PAGE_API, { "uri": '/author-interviews' }));
-
         var params = {
-            "blogId": "$req1.primaryContentId",
             "language": language
         };
         params["state"] = state != null ? state : "PUBLISHED";
         if (cursor != null) params["cursor"] = cursor;
         if (resultCount != null) params["resultCount"] = resultCount;
 
-        requests.push(new request("req2", BLOG_POST_LIST_API, params));
-        httpUtil.get(API_PREFIX, null, { "requests": processRequests(requests) },
-            function(response, status) {
-                if (aCallBack != null) {
-                    var blogpost = response.req2.status == 200 ? response.req2.response : null;
-                    aCallBack(blogpost);
-                }
+	httpUtil.get(API_PREFIX + AUTHOR_INTERVIEWS_LIST_API,
+            null,
+            params,
+            function(response, status) { 
+                var blogpost = status == 200 ? response : null;
+                aCallBack(blogpost);
             });
     },
 
