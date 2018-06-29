@@ -39,11 +39,11 @@
                             </select>
                         </div>
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="agree-terms-conditions">
+                            <input type="checkbox" class="form-check-input" id="agree-terms-conditions" v-model="checkBox">
                             <label class="form-check-label" for="agree-terms-conditions">__("writer_accept_copyright")</label>
                         </div>
                         <a href="/terms-of-service" class="terms-link" target="_blank">__("writer_read_copyright")</a>
-                        <button type="button" @click="createPratilipiAndGoToWriter({ title, titleEn, type, language })" class="btn btn-submit">__("writer_to_next_screen")</button>
+                        <button type="button" @click="createPratilipiAndGoToWriter({ title, titleEn, type, language })" class="btn btn-submit" id="createPratilipiAndGoToWriterButton">__("writer_to_next_screen")</button>
                     </form>
                 </div>
             </div>
@@ -63,13 +63,27 @@ export default {
             title: '',
             titleEn: '',
             language: '',
-            type: '',
+            type: 'STORY',
             isCreated: false,
+            checkBox: false
         }
     },
     methods: {
         updatePrefilledValue(value) {
             this.title = value;
+
+        },
+        shouldBeActive() {
+            console.log("this.title.length " + this.title.length + " " +this.checkBox +  " " +this.type);
+            if((this.title.length!=0)&&(this.checkBox)&&(this.type!=null)&&(this.titleEn!=0)) {
+            document.getElementById("createPratilipiAndGoToWriterButton").disabled = false;
+            }
+            else
+            {
+            document.getElementById("createPratilipiAndGoToWriterButton").disabled = true;
+
+            }
+
         },
         ...mapActions('writepage', [
             'createPratilipiAndGoToWriter'
@@ -78,6 +92,7 @@ export default {
 
       created() {
         this.isCreated = true;
+
         const currentLocale = process.env.LANGUAGE;
         constants.LANGUAGES.forEach((eachLanguage) => {
             if (eachLanguage.shortName == currentLocale) {
@@ -85,12 +100,30 @@ export default {
             }
         });
     },
+    mounted() {
+                document.getElementById("createPratilipiAndGoToWriterButton").disabled = true;
+
+            },
     components: {
         TranslatingInput
     },
 
 
     watch: {
+        'title'(value) {
+            this.shouldBeActive();
+            },
+        'type' (value) {
+            console.log(value);
+            this.shouldBeActive();
+        },
+        'checkBox'(value) {
+            console.log(value);
+            this.shouldBeActive();
+        },
+        'titleEn'(value) {
+            this.shouldBeActive();
+        },
         language(value) {
             if(!this.isCreated){
              switch(value.toLowerCase()) {
